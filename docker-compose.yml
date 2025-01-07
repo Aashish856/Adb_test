@@ -15,11 +15,14 @@ services:
   app:
     build: .
     container_name: app
-    command: bash -c "cd /src/app && yarn install && yarn start"
+    command: bash -c "cd /src/my-app && npm install && npm start"
     ports:
       - "3000:3000"
     volumes:
       - ${ADBREW_CODEBASE_PATH}:/src
+    user: "1000:1000"
+    stdin_open: true
+    tty: true
 
   mongo:
     build: .
@@ -30,5 +33,3 @@ services:
     volumes:
       - ${ADBREW_CODEBASE_PATH}/db/:/data/db
     command: /usr/bin/mongod --bind_ip 0.0.0.0
-
-    

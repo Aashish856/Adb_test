@@ -11,10 +11,30 @@ db = MongoClient(mongo_uri)['test_db']
 class TodoListView(APIView):
 
     def get(self, request):
-        # Implement this method - return all todo items from db instance above.
-        return Response({}, status=status.HTTP_200_OK)
+        todos = db.todos.find()
+        todos_list = []
+        
+        # Convert ObjectId to string for JSON serialization
+        for todo in todos:
+            todo['_id'] = str(todo['_id'])
+            todos_list.append(todo)
+        
+        return Response(todos_list, status=status.HTTP_200_OK)
         
     def post(self, request):
-        # Implement this method - accept a todo item in a mongo collection, persist it using db instance above.
-        return Response({}, status=status.HTTP_200_OK)
+        # Insert the new todo item into the database
+        db.todos.insert_one(request.data)
+        
+        # Return success response with status 201 Created
+        return Response({"msg" : "Todo item created successfully"},status=status.HTTP_201_CREATED)
+
+    def delete(self, request):
+        result = db.todos.delete_many({})  # No filter means all documents will be deleted
+        return Response(
+            {
+                "msg": "All todo items deleted successfully",
+                "deleted_count": result.deleted_count,  # Optional: Include the count of deleted items
+            },
+            status=status.HTTP_200_OK,
+        )
 

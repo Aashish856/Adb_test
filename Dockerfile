@@ -1,5 +1,5 @@
 # set base image (host OS)
-FROM python:3.8
+FROM python:3.8-buster
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
@@ -8,7 +8,6 @@ RUN apt-get install -y curl nano wget nginx git
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-
 
 # Mongo
 RUN ln -s /bin/echo /bin/systemctl
@@ -21,8 +20,16 @@ RUN apt-get install -y mongodb-org
 RUN apt-get install -y yarn
 
 # Install PIP
-RUN easy_install pip
+RUN apt-get install -y python3-pip
 
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest
+
+
+# Verify installations
+RUN node -v && npm -v
 
 ENV ENV_TYPE staging
 ENV MONGO_HOST mongo

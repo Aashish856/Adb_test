@@ -1,28 +1,14 @@
-import './App.css';
-import logo from './logo.svg';
-
-
-export function App() {
+// import Blogs from "./components/Blogs";
+import Home from "./components/Home";
+function App() {
   return (
-    <div className="App">
-      <div>
-        <h1>List of TODOs</h1>
-        <li>Learn Docker</li>
-        <li>Learn React</li>
+    <>
+      <div className="container">
+        <div style={{marginTop : "5vh"}}>
+          <Home />
+        </div>
       </div>
-      <div>
-        <h1>Create a ToDo</h1>
-        <form>
-          <div>
-            <label for="todo">ToDo: </label>
-            <input type="text" />
-          </div>
-          <div style={{"marginTop": "5px"}}>
-            <button>Add ToDo!</button>
-          </div>
-        </form>
-      </div>
-    </div>
+    </>
   );
 }
 
