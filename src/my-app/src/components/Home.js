@@ -12,6 +12,10 @@ function Home(){
 
 
     const handleAddTodo = () => {
+        if(title === "" || content === ""){
+            alert("Please fill all the fields");
+            return;
+        }
         axios.post("http://localhost:8000/todos/", {
             title : title,
             content : content
@@ -22,12 +26,16 @@ function Home(){
             setTitle("");
             setContent("");
             alert("Todo Added Successfully");
+        }).catch((err) => {
+            alert("Error Adding Todo");
         });
     }
 
     useEffect(() => {
         axios.get("http://localhost:8000/todos/?format=json").then((res) => {
             setTodos(res.data);
+        }).catch((err) => {
+            alert("Error Fetching Todos");
         });
     }, []);
 

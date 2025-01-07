@@ -11,29 +11,31 @@ db = MongoClient(mongo_uri)['test_db']
 class TodoListView(APIView):
 
     def get(self, request):
-        todos = db.todos.find()
-        todos_list = []
-        
-        # Convert ObjectId to string for JSON serialization
-        for todo in todos:
-            todo['_id'] = str(todo['_id'])
-            todos_list.append(todo)
-        
-        return Response(todos_list, status=status.HTTP_200_OK)
+        try:
+            todos = db.todos.find()
+            todos_list = []
+            for todo in todos:
+                todo['_id'] = str(todo['_id'])
+                todos_list.append(todo)
+            return Response(todos_list, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"msg" : "Error Fetching Todos"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     def post(self, request):
-        # Insert the new todo item into the database
-        db.todos.insert_one(request.data)
-        
-        # Return success response with status 201 Created
-        return Response({"msg" : "Todo item created successfully"},status=status.HTTP_201_CREATED)
+        try:
+            if(not request.data.get("title") or not request.data.get("content")):
+                return Response({"msg" : "Title and Content are required"}, status=status.HTTP_400_BAD_REQUEST)
+            db.todos.insert_one(request.data)
+            return Response({"msg" : "Todo item created successfully"},status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"msg" : "Error Adding Todo"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request):
-        result = db.todos.delete_many({})  # No filter means all documents will be deleted
+        result = db.todos.delete_many({}) 
         return Response(
             {
                 "msg": "All todo items deleted successfully",
-                "deleted_count": result.deleted_count,  # Optional: Include the count of deleted items
+                "deleted_count": result.deleted_count,
             },
             status=status.HTTP_200_OK,
         )
